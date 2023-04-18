@@ -38,14 +38,14 @@ class ArithmeticCalculatorTest {
 	}
 
 	@Test
-	@DisplayName("Testing add method -1 ")
+   @DisplayName("Testing add method -1 ")
 	void testAdd1() {
 		System.out.println("testAdd1 called");
 		int actual = calculator.add(10, 10);
 		assertEquals(expected, actual);
 	}
 	
-	@Test
+	@Test	
 	@DisplayName("Testing add method -2 ")
 	void testAdd2() {
 		System.out.println("testAdd2 called");

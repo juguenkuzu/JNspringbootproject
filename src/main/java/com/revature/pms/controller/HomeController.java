@@ -11,7 +11,7 @@ public class HomeController {
 		return "Welcome To Revature";
 	}
 	
-	@GetMapping("message")
+	@GetMapping("/message")
 	public String message() {
 		return "-- Revature Training App --";
 	}

@@ -50,14 +50,12 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public List<Product> getProductByName(String productName) {
-		// TODO Auto-generated method stub
-		return null;
+		return productDAO.findByProductName(productName);
 	}
 
 	@Override
 	public List<Product> getProductByPriceRange(int lower, int upper) {
-		// TODO Auto-generated method stub
-		return null;
+		return productDAO.findByPriceBetween(lower, upper);
 	}
 
 }

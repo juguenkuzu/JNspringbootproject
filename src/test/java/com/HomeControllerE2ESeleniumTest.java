@@ -1,5 +1,6 @@
 package com;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
@@ -21,15 +22,20 @@ public class HomeControllerE2ESeleniumTest {
 	@LocalServerPort
 	private int port;
 	
-	@Test
-	public void testMessage() {
+	@BeforeEach
+	public void setup() {
 		ChromeDriverManager.getInstance().setup();
 		driver = new ChromeDriver();
+}
+	
+	@Test
+	public void testMessage() {
+		
 		
 		driver.get(String.format("http://127.0.0.1:%s/message",port));
 		String result = driver.findElement(By.tagName("body")).getText();
 		
-		Assert.assertEquals("-- Revature Training App --",result);
+		Assert.assertEquals("-- Revature Training App --",result); 
 	}
 	
 }

@@ -25,32 +25,66 @@ import com.revature.pms.service.ProductServiceImpl;
 //CRUD - operation completed successfully
 @RestController
 @RequestMapping("product")
+/*
+ * @CrossOrigin(origins = "http://localhost:9090")
+ */
 @CrossOrigin(origins = "http://localhost:4200")
 public class ProductController {
 
 	@Autowired
-	@Qualifier("productnewimpl")
+	//@Qualifier("productnewimpl")
+	@Qualifier("productoldimpl")
 	ProductService productService;
 
 	// localhost:9090/product/
-	@GetMapping()
-	public List<Product> getProducts(@RequestParam (required = false)String productName) {
-		
+	
+	/*
+	 * // get all product old implementation
+	 * 
+	 * @GetMapping() List<Product> getProducts() {
+	 * 
+	 * return productService.getProducts(); }
+	 */
+	
+	
+	@GetMapping("/price") 
+	  public List<Product> getProductByPriceRange(@RequestParam int lower, int upper) {
+	  
 		List<Product> products = new ArrayList<Product>();
 		
-		if(productName == null)
-		{
-			//the client wants all the products
-			products = productService.getProducts();
-		}
-		else
-		{
-			//the client wants filtered products
-			products = productService.getProductByName(productName);
-		}
+		products = productService.getProductByPriceRange(lower, upper);
 		
 		return products;
 	}
+	
+	
+	  // get  product by name  new implementation
+	  
+	  @GetMapping() 
+	  public ResponseEntity<List<Product>> getProducts(@RequestParam (required =	  false)String productName) {
+	  
+	  List<Product> products = new ArrayList<Product>();
+	  products=productService.getProducts();
+	  int sizeprod=productService.getProducts().size();
+	  if (sizeprod==0 ) {
+		
+		  return new ResponseEntity<List<Product>>(products,HttpStatus.NO_CONTENT);
+		  
+	  }
+	  
+	  else {
+	  
+	  if(productName == null) { 
+		  //the client wants all the products 
+		  return new ResponseEntity<List<Product>>(products,HttpStatus.OK); } 
+	  else 
+	  { //the client wants filtered products
+	  products = productService.getProductByName(productName); }
+	  
+	  return new ResponseEntity<List<Product>>(products,HttpStatus.OK);
+	  }
+	  }
+	 
 
 	// localhost:9090/product/iPhone
 	@GetMapping("/searchProductName/{productName}")
@@ -71,48 +105,74 @@ public class ProductController {
 			responseEntity = new ResponseEntity<Product>(product, HttpStatus.OK);
 			// product exists
 		} else {
+			// product does not exist
 			responseEntity = new ResponseEntity<Product>(product, HttpStatus.NO_CONTENT);
 		}
 
 		return responseEntity;
 	}
+	
+	
+	/*
+	 * // Add product old implementation
+	 * 
+	 * @PostMapping() public String saveProduct(@RequestBody Product product) {
+	 * productService.addProduct(product); return "Product saved successfully";
+	 * 
+	 * }
+	 */
 
-	// save functionality
-	@PostMapping()
-	public ResponseEntity<String> saveProduct(@RequestBody Product product) {
-		ResponseEntity<String> responseEntity = new ResponseEntity<String>(HttpStatus.OK);
-		// two scenario
-		if (productService.isProductExists(product.getProductId())) {
-			responseEntity = new ResponseEntity<String>(
-					"Product with product id :" + product.getProductId() + " already exists", HttpStatus.CONFLICT);
-			// product exists
-		} else {
-			productService.addProduct(product);
-			responseEntity = new ResponseEntity<String>("Product saved successfully :" + product.getProductId(),
-					HttpStatus.CREATED);
-		}
-		return responseEntity;
-	}
+	
+	
+	  // Add  product new implementation
+	  
+	  @PostMapping() public ResponseEntity<String> saveProduct(@RequestBody Product product) {
+		  ResponseEntity<String> responseEntity = new 	  ResponseEntity<String>(HttpStatus.OK);
+		  // two scenario 
+		//if  product 	  exists 
+	  if(productService.isProductExists(product.getProductId())) {
+		  responseEntity = new ResponseEntity<String>("Product with product id :" +  product.getProductId() + " already exists", HttpStatus.CONFLICT); 
+	  
+	  } 
+	  else 
+	  {
+		  productService.addProduct(product); 
+	  responseEntity = new  ResponseEntity<String>("Product saved successfully :" + product.getProductId(), HttpStatus.CREATED); } 
+	  
+	  return responseEntity; }
+	 
 
-	// update functionality
-	@PutMapping()
-	public ResponseEntity<String> updateProduct(@RequestBody Product product) {
-		ResponseEntity<String> responseEntity = new ResponseEntity<String>(HttpStatus.OK);
-		// two scenario
-		if (productService.isProductExists(product.getProductId())) {
-			productService.updateProduct(product);
+	/*
+	 * // update product old implementation
+	 * 
+	 * @PutMapping() public String updateProduct(@RequestBody Product product) {
+	 * productService.updateProduct(product); return "Product updated successfully";
+	 * 
+	 * }
+	 */
+	
+	
+	  // update product new implementation
+	  
+	  @PutMapping() public ResponseEntity<String> updateProduct(@RequestBody Product product) {
+		  ResponseEntity<String> responseEntity = new 	  ResponseEntity<String>(HttpStatus.OK);
+		  // two scenario 
+		  // product 	  exists
+	  if	  (productService.isProductExists(product.getProductId())) {
+	  productService.updateProduct(product);
+	  
+	  responseEntity = new ResponseEntity<String>( "Product with product id :" +  product.getProductId() + " updated successfully", HttpStatus.OK); 
+	  
+	  }
+	  else 
+	  { responseEntity = new ResponseEntity<String>("Product not updated successfully :" +  product.getProductId(), HttpStatus.NOT_MODIFIED); 
+	  
+	  }
+	  
+	  return responseEntity; }
+	 
 
-			responseEntity = new ResponseEntity<String>(
-					"Product with product id :" + product.getProductId() + " updated successfully", HttpStatus.OK);
-			// product exists
-		} else {
-			responseEntity = new ResponseEntity<String>("Product not updated successfully :" + product.getProductId(),
-					HttpStatus.NOT_MODIFIED);
-		}
-		return responseEntity;
-	}
-
-	// delete
+	// delete product new implementation
 	// http://localhost:9090/product/2009
 	@DeleteMapping("{productId}")
 	public ResponseEntity<String> deleteProduct(@PathVariable("productId") int productId) {
@@ -121,10 +181,10 @@ public class ProductController {
 		// two scenario
 		if (productService.isProductExists(productId)) {
 			productService.deleteProduct(productId);
-			responseEntity = new ResponseEntity<String>("Product deleted successfully", HttpStatus.NO_CONTENT);
+			responseEntity = new ResponseEntity<String>("Product deleted successfully", HttpStatus.OK);
 			// product exists
 		} else {
-			responseEntity = new ResponseEntity<String>("Product not deleted successfully", HttpStatus.OK);
+			responseEntity = new ResponseEntity<String>("Product not deleted successfully", HttpStatus.BAD_REQUEST);
 		}
 
 		return responseEntity;

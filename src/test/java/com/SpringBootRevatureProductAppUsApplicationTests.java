@@ -2,6 +2,7 @@ package com;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -14,6 +15,11 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import com.revature.pms.dao.*;
+import com.revature.pms.model.Product;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class SpringBootRevatureProductAppUsApplicationTests {
@@ -23,6 +29,10 @@ class SpringBootRevatureProductAppUsApplicationTests {
 
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired
+	private ProductDAO ProductDAO;
+	
 
 	private String baseURL = "http://localhost";
 
@@ -33,6 +43,20 @@ class SpringBootRevatureProductAppUsApplicationTests {
 		System.out.println("Before each ");
 		url = new URL(baseURL + ":" + port);
 		messageURL = new URL(baseURL + ":" + port+"/message");
+	}
+	
+	@Test
+	@DisplayName("Testing Product DAO Save")
+	public void saveproduct()  {
+		
+		Product product=new Product(6,"cheese",3,10);
+		List<Product> products=(List<Product>)ProductDAO.findAll();
+		int originalsize=products.size();
+		ProductDAO.save(product);
+		assertEquals(originalsize+1, 11);
+		
+		
+		
 	}
 	@Test
 	@DisplayName("Testing home")
